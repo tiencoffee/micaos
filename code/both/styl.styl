@@ -1,0 +1,1039 @@
+light1 = #f8fafc
+light2 = #f1f5f9
+light3 = #e2e8f0
+light4 = #cbd5e1
+light5 = #94a3b8
+
+dark1 = #64748b
+dark2 = #475569
+dark3 = #334155
+dark4 = #1e293b
+dark5 = #0f172a
+
+red1 = #fecaca
+red2 = #f87171
+red3 = #dc2626
+red4 = #b91c1c
+red5 = #7f1d1d
+
+yellow1 = #fde68a
+yellow2 = #fbbf24
+yellow3 = #d97706
+yellow4 = #b45309
+yellow5 = #78350f
+
+green1 = #bbf7d0
+green2 = #4ade80
+green3 = #16a34a
+green4 = #15803d
+green5 = #14532d
+
+blue1 = #bfdbfe
+blue2 = #60a5fa
+blue3 = #2563eb
+blue4 = #1d4ed8
+blue5 = #1e3a8a
+
+white = #fff
+black = #000
+
+$colors = {
+	light: light1 light2 light3 light4 light5
+	dark: dark1 dark2 dark3 dark4 dark5
+	red: red1 red2 red3 red4 red5
+	yellow: yellow1 yellow2 yellow3 yellow4 yellow5
+	green: green1 green2 green3 green4 green5
+	blue: blue1 blue2 blue3 blue4 blue5
+}
+
+$colors2 = {
+	transparent: #0000
+	black: #000
+	white: #fff
+}
+
+$spaces = {
+	"0": 0
+	"1": 1px
+	"2": 4px
+	"3": 8px
+	"4": 12px
+	"5": 16px
+	"6": 20px
+	"7": 24px
+	"8": 28px
+	"9": 32px
+}
+
+box-direction(arguments)
+	-webkit-box-direction arguments
+	box-direction arguments
+box-orient(arguments)
+	-webkit-box-orient arguments
+	box-orient arguments
+line-clamp(arguments)
+	-webkit-line-clamp arguments
+	line-clamp arguments
+text-clamp(arguments)
+	display -webkit-box
+	line-clamp arguments
+	overflow hidden
+	box-orient vertical
+text-security(arguments)
+	-webkit-text-security arguments
+	text-security arguments
+text-truncate(arguments)
+	text-overflow arguments
+	white-space nowrap
+	overflow hidden
+user-drag(arguments)
+	-webkit-user-drag arguments
+	user-drag arguments
+user-modify(arguments)
+	-webkit-user-modify arguments
+	user-modify arguments
+
+@import "https://fonts.googleapis.com/css?family=Roboto:,i,b,bi"
+
+*, *:before, *:after
+	vertical-align middle
+	box-sizing border-box
+::-webkit-scrollbar
+	appearance none
+	width 16px
+	height 16px
+::-webkit-scrollbar-thumb
+	border solid 3px #fff
+	border-radius 7px
+	background light5
+	&:hover
+		background dark1
+.scrollbar-inset
+	&::-webkit-scrollbar
+		width 12px
+		height 12px
+	&::-webkit-scrollbar-thumb
+		border-left 0
+		border-top-left-radius 3.5px 7px
+		border-bottom-left-radius 3.5px 7px
+body
+	margin 0
+	font-family "Roboto",sans-serif
+	font-size 16px
+	line-height 1.5
+	tab-size 2
+	word-break break-word
+	user-select none
+input:focus
+textarea:focus
+:not(:focus-visible)
+[contenteditable]:focus
+	outline 0
+input[type=number]::-webkit-inner-spin-button
+	display none
+p
+	margin 8px 0
+for size, i in 48 32 24 19 16 13
+	h{i + 1}
+		margin 8px 0
+		font-size (size)px
+small
+	font-size 13px
+code
+	padding 0 4px
+	border solid 1px light5
+	border-radius 4px
+	font-family "PragmataPro Mono",monospace
+	background light1
+	color dark3
+kbd
+	padding 2px 8px
+	border-bottom solid 2px dark5
+	border-radius 4px
+	font-family "PragmataPro Mono",monospace
+	background dark3
+	color #fff
+pre
+	margin 8px 0
+	font-family "PragmataPro Mono",monospace
+blockquote
+	margin 8px 0
+	padding-left 16px
+	border-left solid 4px light4
+ul
+	padding-left 32px
+	list-style-type square
+
+.disabled
+	opacity .5
+	pointer-events none
+	.disabled
+		opacity 1
+.fa, .fas, .far, .fal, .fat, .fad, .fab
+	&:after
+		vertical-align baseline
+
+.Icon__fa
+	display inline-flex
+	justify-content center
+	align-items center
+.Icon__img
+	width 1.25em
+	height 1.25em
+	object-fit contain
+	image-rendering -webkit-optimize-contrast
+.Icon__blank
+	width 1.25em
+	height 1.25em
+	display inline-block
+
+colors = {
+	"": (light3 light5 black light4 black light3)
+	--red: (red3 red5 white red4 red4 red1)
+	--yellow: (yellow3 yellow5 white yellow4 yellow4 yellow1)
+	--green: (green3 green5 white green4 green4 green1)
+	--blue: (blue3 blue5 white blue4 blue4 blue1)
+}
+.Button
+	height 28px
+	padding 0 4px
+	border solid 1px
+	border-radius 4px
+	display inline-flex
+	justify-content center
+	align-items center
+	font inherit
+	white-space nowrap
+for c, color in colors
+	.Button{c}
+		border-color color[1]
+		background color[0]
+		color color[2]
+		&:hover
+		&.active
+			background color[3]
+		&.Button--basic
+			color color[4]
+			&:hover
+			&.active
+				background color[5]
+.Button--basic
+	border 0
+	background #0000
+for align in left right
+	.Button--{align}
+		> .Button__text
+			text-align align
+.Button__icon
+	margin 0 4px
+	pointer-events none
+.Button__text
+	margin 0 4px
+	flex 1
+	text-truncate ellipsis
+	pointer-events none
+
+.TextInput
+	width 200px
+	height 28px
+	padding 0 4px
+	border solid 1px light5
+	border-radius 4px
+	display inline-flex
+	justify-content center
+	align-items center
+	background #fff
+	&:focus-within
+		position relative
+		border-color #0000
+		box-shadow 0 0 0 1px blue5,0 0 0 3px rgba(blue3,.667)
+		z-index 2
+.TextInput__input
+	width 0
+	height 100%
+	padding 0 4px
+	border 0
+	flex 1
+	font inherit
+	background #0000
+.TextInput__icon
+	margin 0 4px
+
+.PasswordInput
+	&:not(.PasswordInput--isShowPassword)
+		.TextInput__input
+			text-security square
+
+.Checkbox
+.Radio
+	display inline-flex
+	align-items center
+.Checkbox__input
+.Radio__input
+	appearance none
+	position relative
+	width 20px
+	height 20px
+	margin 0
+	border solid 1px light5
+	background #fff
+	&:hover
+		background light3
+	&:checked
+		border-color blue5
+		background blue3
+		&:hover
+			background blue4
+.Checkbox__input
+	border-radius 4px
+	&:checked
+		&:after
+			content "\f00c"
+			position absolute
+			inset 0
+			display flex
+			justify-content center
+			align-items center
+			font 900 16px "Font Awesome 6 Pro"
+			color #fff
+.Radio__input
+	border-radius 28px
+	&:checked
+		&:after
+			content ""
+			position absolute
+			inset 5px
+			border-radius 28px
+			background #fff
+.Checkbox__text
+.Radio__text
+	margin-left 8px
+
+.Switch
+	display inline-flex
+	align-items center
+	&:hover
+		.Switch__track
+			background light4
+.Switch--checked
+	&:hover
+		.Switch__track
+			background blue4
+	.Switch__track
+		background blue3
+	.Switch__thumb
+		left calc(100% - 19px)
+		border-color blue5
+.Switch__track
+	position relative
+	width 36px
+	height 20px
+	border-radius 20px
+	background light3
+	transition background .15s cubic-bezier(.25,1,.5,1)
+.Switch__thumb
+	position absolute
+	left 1px
+	top 1px
+	width 18px
+	height 18px
+	border solid 1px light5
+	border-radius 18px
+	background #fff
+	transition left .15s cubic-bezier(.25,1,.5,1)
+.Switch__input
+	display none
+.Switch__text
+	margin-left 8px
+
+.Slider
+	display inline-flex
+	white-space nowrap
+.Slider--horizontal
+	width 200px
+	flex-direction column-reverse
+	.Slider__range
+		height 20px
+		margin 0 10px
+		align-items center
+	.Slider__track
+		height 8px
+		margin 0 -4px
+	.Slider__thumb
+		transform translateX(-50%)
+	.Slider__labels
+		height 18px
+		margin 0 10px
+		align-items center
+	.Slider__label
+		transform translateX(-50%)
+.Slider--vertical
+	height 200px
+	.Slider__range
+		width 20px
+		margin 10px 0
+		justify-content center
+	.Slider__track
+		max-width 8px
+		margin -4px 0
+	.Slider__thumb
+		transform translateY(50%)
+	.Slider__labels
+		width 20px
+		margin 10px 0 10px 8px
+	.Slider__label
+		transform translateY(50%)
+.Slider--moving
+	.Slider__thumb
+		background light3
+.Slider__range
+	position relative
+	display flex
+.Slider__track
+	border-radius 4px
+	flex 1
+	background light4
+.Slider__thumb
+	position absolute
+	width 20px
+	height 20px
+	border solid 1px light5
+	border-radius 4px
+	background #fff
+	&:hover
+		background light3
+.Slider__labels
+	position relative
+	font-size 12px
+.Slider__label
+	position absolute
+
+.Select
+	position relative
+	width 200px
+	> .Button__leftIcon
+		width 20px
+		justify-content flex-start
+.Select__popper
+	width calc(100% + 12px)
+	border solid 1px light5
+	border-radius 8px
+	text-align left
+	white-space normal
+	overflow-x hidden
+	overflow-y auto
+	background #fff
+	box-shadow 0 4px 6px -1px #0002,0 2px 4px -2px #0002
+	z-index 80
+.Select__items
+	padding 4px
+.Select__item
+	min-height 28px
+	padding 0 8px
+	border-radius 4px
+	display flex
+	align-items center
+	&:hover
+	&.active
+		background light4
+.Select__itemIcon
+	width 28px
+	min-width 28px
+	display flex
+	align-items center
+.Select__header
+	min-height 28px
+	padding 0 12px
+	display flex
+	align-items center
+	font-size 14px
+	font-weight bold
+	pointer-events none
+	&:not(:first-child)
+		min-height 32px
+		margin-top 4px
+		padding-top 4px
+		border-top solid 1px light5
+.Select__divider
+	margin 4px 0
+	border-top solid 1px light5
+	pointer-events none
+
+.Progress
+	width 200px
+	height 8px
+	border-radius 4px
+	display inline-block
+	overflow hidden
+	background light4
+.Progress__bar
+	height 100%
+	border-radius 4px
+	transition width .15s cubic-bezier(.25,1,.5,1)
+colors = {
+	"": dark1
+	--red: red3
+	--yellow: yellow3
+	--green: green3
+	--blue: blue3
+}
+for c, color in colors
+	.Progress{c}
+		> .Progress__bar
+			background color
+
+.Spinner
+	display inline-block
+.Spinner__svg
+	stroke-width 4
+.Spinner__track
+	stroke light4
+	fill #0000
+.Spinner__bar
+	stroke-linecap round
+	fill #0000
+	transform-origin center
+	animation-duration .65s
+colors = {
+	"": dark1
+	--red: red3
+	--yellow: yellow3
+	--green: green3
+	--blue: blue3
+}
+for c, color in colors
+	.Spinner{c}
+		.Spinner__bar
+			stroke color
+
+.Menu
+	min-width 160px
+	max-width 500px
+	padding 4px
+	border solid 1px light5
+	border-radius 8px
+	display inline-block
+	white-space nowrap
+	background #fff
+.Menu__item
+	min-height 28px
+	padding 0 12px
+	border-radius 4px
+	display flex
+	align-items center
+colors = {
+	"": (black light3 black dark2)
+	--red: (red4 red3 white light2)
+	--yellow: (yellow4 yellow3 white light2)
+	--green: (green4 green3 white light2)
+	--blue: (blue4 blue3 white light2)
+}
+for c, color in colors
+	.Menu__item{c}
+		color color[0]
+		&:hover
+		&.active
+			background color[1]
+			color color[2]
+			.Menu__itemLabel
+				color color[3]
+.Menu__itemIcon
+	width 28px
+	min-width 28px
+	display flex
+	align-items center
+.Menu__itemText
+	flex 1
+	text-truncate ellipsis
+.Menu__itemLabel
+	margin-left 24px
+	display flex
+	align-items center
+	font-size 13px
+	color dark1
+.Menu__header
+	height 28px
+	padding 0 12px
+	display flex
+	align-items center
+	font-size 14px
+	font-weight bold
+	overflow hidden
+	pointer-events none
+	&:not(:first-child)
+		min-height 32px
+		margin-top 4px
+		padding-top 4px
+		border-top solid 1px light5
+.Menu__divider
+	margin 4px 0
+	border-top solid 1px light5
+	pointer-events none
+.Menu__submenu
+	border-radius 8px
+	box-shadow 0 4px 6px -1px #0002,0 2px 4px -2px #0002
+	z-index 81
+
+.InputGroup
+	width 200px
+	height 28px
+	border-radius 4px
+	display inline-flex
+	justify-content center
+	align-items center
+	> *
+		border-radius 0
+	> :first-child
+		border-top-left-radius 4px
+		border-bottom-left-radius 4px
+	> :last-child
+		border-top-right-radius 4px
+		border-bottom-right-radius 4px
+	> :not(:first-child)
+		margin-left -1px
+	> .InputGroup
+	> .TextInput
+	> .NumberInput
+	> .Select
+		flex 1
+	> .Button--hasColor
+		position relative
+		z-index 1
+
+.Table
+	border-radius 4px
+	overflow auto
+	tr
+		height 28px
+	td, th
+		padding 0 8px
+	th
+		text-align left
+.Table--hasHeader
+	tr:first-child
+		position sticky
+		top 0
+		background #fff
+		> th
+			border-bottom solid 1px light5
+.Table--striped
+	tr:nth-child(even)
+		background light2
+.Table--bordered
+	&:not(.Table--striped)
+		&:not(.Table--hasHeader) tr + tr > td
+		&.Table--hasHeader tr + tr + tr > td
+			border-top solid 1px light5
+	td, th
+		&:not(:first-child)
+			border-left solid 1px light5
+.Table--interactive
+	&:not(.Table--hasHeader) tr:hover
+	&:not(.Table--hasHeader) tr.active
+	&.Table--hasHeader tr:not(:first-child):hover
+	&.Table--hasHeader tr:not(:first-child).active
+		background light3
+	&.Table--striped
+		&:not(.Table--hasHeader) tr:hover
+		&:not(.Table--hasHeader) tr.active
+		&.Table--hasHeader tr:not(:first-child):hover
+		&.Table--hasHeader tr:not(:first-child).active
+			background light4
+.Table__table
+	min-width 100%
+	display table
+
+.Tabs
+	border-radius 4px
+	display flex
+	background #fff
+.Tabs--horizontal
+	flex-direction column
+	row-gap 8px
+	> .Tabs__tabs
+		padding-bottom 3px
+		display flex
+		align-items center
+		column-gap 16px
+		> .Tabs__indicator
+			bottom 0
+			background blue4
+.Tabs--vertical
+	flex-direction row
+	column-gap 16px
+	> .Tabs__tabs
+		> .Tabs__indicator
+			background blue1
+		> .Tabs__tab
+			padding 0 8px
+.Tabs__tabs
+	position relative
+	white-space nowrap
+.Tabs__tab
+	position relative
+	height 28px
+	border-radius 4px
+	display flex
+	align-items center
+	column-gap 8px
+	z-index 0
+	&:hover
+	&.active
+		color blue4
+.Tabs__indicator
+	position absolute
+	border-radius 4px
+.Tabs__panel
+	position relative
+
+.Popover
+	width max-content
+	max-width calc(100vw - 16px)
+	max-height calc(100vh - 16px)
+	border solid 1px light5
+	border-radius 8px
+	background #fff
+	box-shadow 0 4px 6px -1px #0002,0 2px 4px -2px #0002
+	z-index 80
+.Popover__content
+	position relative
+
+#m
+	.full
+		position absolute
+		left 0
+		top 0
+		width 100%
+		height 100%
+
+	for val in absolute relative fixed
+		.{val}
+			position val
+
+	poses = {l: left, t: top, r: right, b: bottom}
+	for p, pos in poses
+		for perc in 0 50 100
+			.{p}-{perc}
+				{pos} (perc)%
+
+	props = {w: width, h: height}
+	for p, prop in props
+		for mima in "" "min-" "max-"
+			for perc in 0 50 100
+				.{mima}{p}-{perc}
+					{mima}{prop} (perc)%
+			.{mima}{p}-fit
+				{mima}{prop} fit-content
+
+	props = {m: margin, p: padding}
+	sides = {"": (""), x: (-left -right), y: (-top -bottom), l: (-left), t: (-top), r: (-right), b: (-bottom)}
+	for p, prop in props
+		for s, side in sides
+			for z, size in $spaces
+				.{p}{s}-{z}
+					for side2 in side
+						{prop}{side2} size
+			if p is m
+				for z, size in $spaces
+					if size
+						.-m{s}-{z}
+							for side2 in side
+								margin{side2} -(size)
+				.m{s}-auto
+					for side2 in side
+						margin{side2} auto
+
+	sides = {"": "", -l: -left, -t: -top, -r: -right, -b: -bottom}
+	for s, side in sides
+		.border{s}
+			border{side} solid 1px light5
+		.border{s}-0
+			border{side} 0
+		for w in 1 2 4
+			.border{s}-{w}
+				border{side}-width (w)px
+		for c, color in $colors
+			for tone, i in color
+				.border{s}-{c}-{i + 1}
+					border{side}-color tone
+		for c, color in $colors2
+			.border{s}-{c}
+				border{side}-color color
+	for val in solid dashed dotted
+		.border-{val}
+			border-style val
+
+	dirs = {x: left, y: top}
+	for d, dir in dirs
+		.divide-{d} > * + *
+			border-{dir} solid 1px light5
+	for w in 1 2
+		.divide-{w} > * + *
+			border-width (w)px
+	for c, color in $colors
+		for tone, i in color
+			.divide-{c}-{i + 1} > * + *
+				border-color tone
+	for c, color in $colors2
+		.divide-{c} > * + *
+			border-color color
+
+	.outline
+		outline solid 1px blue5
+	.outline-0
+		outline 0
+	for w in 1 2
+		.outline-{w}
+			outline-width (w)px
+	for c, color in $colors
+		for tone, i in color
+			.outline-{c}-{i + 1}
+				outline-color tone
+	for val in solid dashed dotted
+		.outline-{val}
+			outline-style val
+
+	colors = {
+		gray: dark5 dark2
+		red: red5 red2
+		blue: blue5 blue2
+	}
+	for c, color in colors
+		.ring-{c}
+			box-shadow 0 0 0 1px color[0],0 0 0 3px color[1]
+
+	sides = {
+		"": ("")
+		-l: (-top-left -bottom-left)
+		-t: (-top-left -top-right)
+		-r: (-top-right -bottom-right)
+		-b: (-bottom-left -bottom-right)
+		-tl: (-top-left)
+		-tr: (-top-right)
+		-bl: (-bottom-left)
+		-br: (-bottom-right)
+	}
+	for s, side in sides
+		.rounded{s}
+			for side2 in side
+				border{side2}-radius 4px
+		.rounded{s}-0
+			for side2 in side
+				border{side2}-radius 0
+		.rounded{s}-lg
+			for side2 in side
+				border{side2}-radius 6px
+		.rounded{s}-full
+			for side2 in side
+				border{side2}-radius 9999px
+
+	for dis in block inline-block inline grid inline-grid
+		.{dis}
+			display dis
+	.hidden
+	[hidden]
+		display none
+
+	.row
+		display flex
+		&.reverse
+			flex-direction row-reverse
+	.column
+		display flex
+		flex-direction column
+		&.reverse
+			flex-direction column-reverse
+	.wrap
+		flex-wrap wrap
+	.wrap-reverse
+		flex-wrap wrap-reverse
+	.nowrap
+		flex-wrap nowrap
+	.col
+		flex 1
+	.col-0
+		flex initial
+	for i in 1..12
+		.col-{i}
+			width round(i / 12 * 100%,6)
+
+	for i in 1..12
+		.columns-{i}
+			grid-template-columns repeat(i,minmax(0,1fr))
+	for i in 1..6
+		.rows-{i}
+			grid-template-rows repeat(i,minmax(0,1fr))
+	.flow-row
+		grid-auto-flow row
+	.flow-column
+		grid-auto-flow column
+	.auto-columns-fr
+		grid-auto-columns minmax(0,1fr)
+	.auto-rows-fr
+		grid-auto-rows minmax(0,1fr)
+
+	.start, .column.top
+		justify-content flex-start
+	.center, .column.middle
+		justify-content center
+	.end, .column.bottom
+		justify-content flex-end
+	.top, .column.start
+		align-items flex-start
+	.middle, .column.center
+		align-items center
+	.bottom, .column.end
+		align-items flex-end
+	.between
+		justify-content space-between
+	.around
+		justify-content space-around
+	.evenly
+		justify-content space-evenly
+	.stretch
+		align-items stretch
+	.baseline
+		align-items baseline
+
+	dirs = {"": "", -x: column-, -y: row-}
+	for d, dir in dirs
+		for z, size in $spaces
+			.gap{d}-{z}
+				{dir}gap size
+
+	for align in left right
+		.float-{align}
+			float align
+	for align in left right both
+		.clear-{align}
+			clear align
+
+	.sans
+		font-family "Roboto",sans-serif
+	.serif
+		font-family serif
+	.mono
+		font-family "PragmataPro Mono",monospace
+
+	sizes = {
+		"xs": 11px
+		"sm": 13px
+		"md": 16px
+		"lg": 19px
+		"xl": 24px
+		"2xl": 32px
+		"3xl": 48px
+	}
+	for z, size in sizes
+		.text-{z}
+			font-size size
+	for val in light normal medium
+		.text-{val}
+			font-weight val
+	.bold
+		font-weight bold
+	.italic
+		font-style italic
+
+	for val, i in 1 1.25 1.5
+		.leading-{i + 1}
+			line-height val
+
+	.list-none
+		list-style none
+
+	for align in left center right justify
+		.text-{align}
+			text-align align
+
+	.underline
+		text-decoration-line underline
+	.line-through
+		text-decoration-line line-through
+	.no-underline
+		text-decoration-line none
+
+	for val in uppercase lowercase capitalize
+		.{val}
+			text-transform val
+
+	.truncate
+		text-truncate ellipsis
+
+	for align in middle baseline
+		.align-{align}
+			vertical-align align
+
+	for val in nowrap pre pre-line pre-wrap
+		.text-{val}
+			white-space val
+
+	for pos in center left top right bottom left-top left-bottom right-top right-bottom
+		.bg-{pos}
+			background-position replace("-"," ",pos)
+	for val in repeat no-repeat repeat-x repeat-y
+		.bg-{val}
+			background-repeat val
+	for val in auto cover contain
+		.bg-{val}
+			background-size val
+	for c, color in $colors
+		for tone, i in color
+			.bg-{c}-{i + 1}
+				background-color tone
+	for c, color in $colors2
+		.bg-{c}
+			background-color color
+
+	for c, color in $colors
+		for tone, i in color
+			.text-{c}-{i + 1}
+				color tone
+	for c, color in $colors2
+		.text-{c}
+			color color
+
+	.shadow-sm
+		box-shadow 0 1px 3px #0002,0 1px 2px -1px #0002
+	.shadow
+		box-shadow 0 4px 6px -1px #0002,0 2px 4px -2px #0002
+	.shadow-lg
+		box-shadow 0 10px 15px -3px #0002,0 4px 6px -4px #0002
+	.shadow-inner
+		box-shadow 0 2px 4px #0001 inset
+
+	for i in 0 10 25 50 75 90 100
+		.opacity-{i}
+			opacity (i / 100)
+
+	for val in contain cover scale-down fill none
+		.object-{val}
+			object-fit val
+	for pos in center left top right bottom left-top left-bottom right-top right-bottom
+		.object-{pos}
+			object-position replace("-"," ",pos)
+
+	for dir in "" -x -y
+		.scroll{dir}
+			overflow{dir} auto
+		.no-scroll{dir}
+			overflow{dir} hidden
+
+	.visible
+		visibility visible
+	.invisible
+		visibility hidden
+
+	.aspect-1
+		aspect-ratio 1
+
+	.events
+		pointer-events auto
+	.no-events
+		pointer-events none
+
+	for z in 0 10 20 30 40 50
+		.z-{z}
+			z-index z
+
+	/* styl */
