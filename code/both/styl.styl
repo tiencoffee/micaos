@@ -34,9 +34,6 @@ blue3 = #2563eb
 blue4 = #1d4ed8
 blue5 = #1e3a8a
 
-white = #fff
-black = #000
-
 $colors = {
 	light: light1 light2 light3 light4 light5
 	dark: dark1 dark2 dark3 dark4 dark5
@@ -64,6 +61,15 @@ $spaces = {
 	"8": 28px
 	"9": 32px
 }
+
+$easeIn = cubic-bezier(.64,0,.78,0)
+$easeOut = cubic-bezier(.22,1,.36,1)
+$easeInOut = cubic-bezier(.83,0,.17,1)
+
+$sans = unquote("'Verdana',sans-serif")
+$mono = unquote("'Cousine',monospace")
+
+@import "https://fonts.googleapis.com/css?family=Cousine:,i,b,bi"
 
 box-direction(arguments)
 	-webkit-box-direction arguments
@@ -93,8 +99,6 @@ user-modify(arguments)
 	-webkit-user-modify arguments
 	user-modify arguments
 
-@import "https://fonts.googleapis.com/css?family=Roboto:,i,b,bi"
-
 *, *:before, *:after
 	vertical-align middle
 	box-sizing border-box
@@ -116,10 +120,14 @@ user-modify(arguments)
 		border-left 0
 		border-top-left-radius 3.5px 7px
 		border-bottom-left-radius 3.5px 7px
+html
+	height 100%
+	overflow hidden
 body
+	height 100%
 	margin 0
-	font-family "Roboto",sans-serif
-	font-size 16px
+	font-family $sans
+	font-size 14px
 	line-height 1.5
 	tab-size 2
 	word-break break-word
@@ -133,29 +141,29 @@ input[type=number]::-webkit-inner-spin-button
 	display none
 p
 	margin 8px 0
-for size, i in 48 32 24 19 16 13
+for size, i in 40 32 24 20 16 14
 	h{i + 1}
 		margin 8px 0
 		font-size (size)px
 small
-	font-size 13px
+	font-size 14px
 code
 	padding 0 4px
 	border solid 1px light5
 	border-radius 4px
-	font-family "PragmataPro Mono",monospace
+	font-family $mono
 	background light1
 	color dark3
 kbd
 	padding 2px 8px
 	border-bottom solid 2px dark5
 	border-radius 4px
-	font-family "PragmataPro Mono",monospace
+	font-family $mono
 	background dark3
 	color #fff
 pre
 	margin 8px 0
-	font-family "PragmataPro Mono",monospace
+	font-family $mono
 blockquote
 	margin 8px 0
 	padding-left 16px
@@ -163,6 +171,11 @@ blockquote
 ul
 	padding-left 32px
 	list-style-type square
+
+#appEl
+	height 100%
+.App
+	height 100%
 
 .disabled
 	opacity .5
@@ -177,14 +190,15 @@ ul
 	display inline-flex
 	justify-content center
 	align-items center
+	font-size 1.1428571em
 .Icon__img
-	width 1.25em
-	height 1.25em
+	width 1.4285714em
+	height 1.4285714em
 	object-fit contain
 	image-rendering -webkit-optimize-contrast
 .Icon__blank
-	width 1.25em
-	height 1.25em
+	width 1.14286em
+	height 1.14286em
 	display inline-block
 
 colors = {
@@ -220,10 +234,14 @@ for c, color in colors
 .Button--basic
 	border 0
 	background #0000
+.Button--small
+	height 24px
 for align in left right
 	.Button--{align}
 		> .Button__text
 			text-align align
+.Button--onlyIcon
+	width 32px
 .Button__icon
 	margin 0 4px
 	pointer-events none
@@ -246,6 +264,7 @@ for align in left right
 	&:focus-within
 		position relative
 		border-color #0000
+		border-radius 4px
 		box-shadow 0 0 0 1px blue5,0 0 0 3px rgba(blue3,.667)
 		z-index 2
 .TextInput__input
@@ -330,7 +349,7 @@ for align in left right
 	height 20px
 	border-radius 20px
 	background light3
-	transition background .15s cubic-bezier(.25,1,.5,1)
+	transition background .15s $easeOut
 .Switch__thumb
 	position absolute
 	left 1px
@@ -340,7 +359,7 @@ for align in left right
 	border solid 1px light5
 	border-radius 18px
 	background #fff
-	transition left .15s cubic-bezier(.25,1,.5,1)
+	transition left .15s $easeOut
 .Switch__input
 	display none
 .Switch__text
@@ -443,10 +462,10 @@ for align in left right
 	align-items center
 .Select__header
 	min-height 28px
-	padding 0 12px
+	padding 0 8px
 	display flex
 	align-items center
-	font-size 14px
+	font-size 12px
 	font-weight bold
 	pointer-events none
 	&:not(:first-child)
@@ -469,7 +488,7 @@ for align in left right
 .Progress__bar
 	height 100%
 	border-radius 4px
-	transition width .15s cubic-bezier(.25,1,.5,1)
+	transition width .15s $easeOut
 colors = {
 	"": dark1
 	--red: red3
@@ -494,6 +513,7 @@ for c, color in colors
 	fill #0000
 	transform-origin center
 	animation-duration .65s
+	transition stroke-dashoffset .15s $easeOut
 colors = {
 	"": dark1
 	--red: red3
@@ -549,14 +569,14 @@ for c, color in colors
 	margin-left 24px
 	display flex
 	align-items center
-	font-size 13px
+	font-size 12px
 	color dark1
 .Menu__header
 	height 28px
 	padding 0 12px
 	display flex
 	align-items center
-	font-size 14px
+	font-size 12px
 	font-weight bold
 	overflow hidden
 	pointer-events none
@@ -909,20 +929,21 @@ for c, color in colors
 			clear align
 
 	.sans
-		font-family "Roboto",sans-serif
+		font-family $sans
 	.serif
 		font-family serif
 	.mono
-		font-family "PragmataPro Mono",monospace
+		font-family $mono
 
 	sizes = {
-		"xs": 11px
-		"sm": 13px
-		"md": 16px
-		"lg": 19px
-		"xl": 24px
-		"2xl": 32px
-		"3xl": 48px
+		"xs": 10px
+		"sm": 12px
+		"md": 14px
+		"lg": 16px
+		"xl": 20px
+		"2xl": 24px
+		"3xl": 32px
+		"4xl": 40px
 	}
 	for z, size in sizes
 		.text-{z}
@@ -1036,4 +1057,4 @@ for c, color in colors
 		.z-{z}
 			z-index z
 
-	/* styl */
+/* styl */

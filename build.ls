@@ -5,19 +5,15 @@ require! {
 
 Paths = {}
 
-dir = \comp/both/*
-Paths[dir] = []
-for file in globConcat.sync dir
-	Paths[dir]push file
+dirs =
+	\comp/both/*
+	\comp/main/*
+	\comp/user/*
+	\C/apps/*
 
-dir = \comp/main/*
-Paths[dir] = []
-for file in globConcat.sync dir
-	Paths[dir]push file
-
-dir = \comp/user/*
-Paths[dir] = []
-for file in globConcat.sync dir
-	Paths[dir]push file
+for dir in dirs
+	Paths[dir] = []
+	for file in globConcat.sync dir
+		Paths[dir]push file
 
 fs.writeJsonSync \paths.json Paths, spaces: \\t

@@ -1,0 +1,5 @@
+name: FileManager
+icon: folder
+width: 700
+height: 500
+admin: yes

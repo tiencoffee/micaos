@@ -18,6 +18,12 @@
 		"comp/both/Tabs.ls",
 		"comp/both/TextInput.ls"
 	],
-	"comp/main/*": [],
-	"comp/user/*": []
+	"comp/main/*": [
+		"comp/main/App.ls",
+		"comp/main/Task.ls"
+	],
+	"comp/user/*": [],
+	"C/apps/*": [
+		"C/apps/FileManager"
+	]
 }

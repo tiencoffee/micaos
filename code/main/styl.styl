@@ -1,0 +1,79 @@
+.App__content
+	height 100%
+	display flex
+	flex-direction column
+.App__tasks
+	position relative
+	flex 1
+.App__loader
+	height 100%
+	display flex
+	flex-direction column
+	justify-content center
+	align-items center
+	background light1
+.App__loaderText
+	margin-top 16px
+
+.Task
+	position absolute
+	border solid 1px light5
+	border-radius 8px
+	background #fff
+	box-shadow 0 4px 6px -1px #0002,0 2px 4px -2px #0002
+	animation Task--open .4s $easeOut
+.Task--didMaximize
+	animation Task--restored .4s $easeOut forwards
+.Task--maximized
+	animation Task--maximized .4s $easeOut forwards
+.Task__content
+	position relative
+	height 100%
+	border-radius 8px
+	display flex
+	flex-direction column
+.Task__header
+	padding 4px
+	border-radius 8px 8px 0 0
+	display flex
+	column-gap 8px
+.Task__title
+	flex 1
+	text-truncate ellipsis
+.Task__body
+	padding 0 4px 4px
+	border-radius 0 0 8px 8px
+	flex 1
+.Task__iframe
+	width 100%
+	height 100%
+	border 0
+	border-radius 6px
+	background coral
+.App__taskbar
+	padding 4px
+	display flex
+	align-items center
+	background #fff
+	box-shadow 0 -1px light5
+	z-index 70
+@keyframes Task--open
+	from
+		transform scale(.9)
+		opacity 0
+@keyframes Task--maximized
+	to
+		left 0
+		top 0
+		width 100%
+		height calc(100% - 1px)
+		border-width 0
+		border-radius 0
+@keyframes Task--restored
+	from
+		left 0
+		top 0
+		width 100%
+		height calc(100% - 1px)
+		border-width 0
+		border-radius 0

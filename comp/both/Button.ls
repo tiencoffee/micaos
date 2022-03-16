@@ -8,9 +8,11 @@ Button = os.comp do
 				"active": @attrs.active
 				"disabled": @attrs.disabled
 				"Button--basic": @attrs.basic
+				"Button--small": @attrs.small
 				"Button--#{@attrs.color}": @attrs.color
 				"Button--#{@attrs.alignText}": @attrs.alignText
 				"Button--hasColor": @attrs.color
+				"Button--onlyIcon": not @attrs.children.length and not (@attrs.icon and @attrs.rightIcon)
 				@attrs.class
 			style: os.style do
 				@attrs.style
