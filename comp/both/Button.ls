@@ -15,10 +15,12 @@ Button = os.comp do
 				"Button--onlyIcon": not @attrs.children.length and not (@attrs.icon and @attrs.rightIcon)
 				@attrs.class
 			style: os.style do
+				width: @attrs.width
 				@attrs.style
 			disabled: @attrs.disabled
 			type: @attrs.type
 			onclick: @attrs.onclick
+			oncontextmenu: @attrs.oncontextmenu
 			if @attrs.icon
 				m Icon,
 					class: "Button__icon Button__leftIcon"

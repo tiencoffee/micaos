@@ -6,7 +6,7 @@ Menu = os.comp do
 
 	oncreate: !->
 		if @attrs.root is @
-			document.addEventListener \mousedown @onmousedownGlobal
+			document.body.addEventListener \mousedown @onmousedownGlobal
 
 	createItems: (items2) ->
 		items = []
@@ -14,7 +14,7 @@ Menu = os.comp do
 		for item2, i in os.castArr items2
 			id = "#{@attrs.parentItemId}-#i"
 			if item2
-				unless item2.hidden or \shown in item2 and not item2.shown
+				unless item2.hidden or \shown of item2 and not item2.shown
 					if item2.header
 						item2 = {item2.header, id}
 						if item and item.divider
@@ -38,6 +38,7 @@ Menu = os.comp do
 		unless item.submenu
 			if typeof item.onclick is \function
 				item.onclick!
+			@attrs.root.attrs.onitemclick? item
 			@attrs.root.closeItem!
 
 	onmouseenterItem: (item, event) !->
@@ -54,10 +55,11 @@ Menu = os.comp do
 						view: ~>
 							m Menu,
 								root: @attrs.root
+								parentItemId: item.id
 								items: item.submenu
 					@popper = os.createPopper event.target, @el,
 						placement: \right-start
-						offset: [-5 -1]
+						offset: [-5 0]
 						tetherOffset: 33
 						flips: [\left-start]
 						allowedFlips: [\right-start \left-start]
@@ -78,6 +80,8 @@ Menu = os.comp do
 	onmousedownGlobal: (event) !->
 		unless event.target.closest \.Menu
 			@closeItem!
+			@attrs.root.attrs.onoutsideclick?!
+			m.redraw!
 
 	clearTimo: !->
 		if @timo
@@ -98,7 +102,7 @@ Menu = os.comp do
 		@clearTimo!
 		@closeItem!
 		if @attrs.root is @
-			document.removeEventListener \mousedown @onmousedownGlobal
+			document.body.removeEventListener \mousedown @onmousedownGlobal
 
 	onremove: !->
 		@close!
@@ -107,6 +111,8 @@ Menu = os.comp do
 		m \.Menu,
 			class: os.class do
 				"Menu--basic": @attrs.basic
+				"Menu--fill": @attrs.fill
+				@attrs.class
 			onmousedown: @onmousedown
 			@attrs.items.map (item) ~>
 				if item.divider

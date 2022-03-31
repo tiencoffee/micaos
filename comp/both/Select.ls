@@ -78,7 +78,7 @@ Select = os.comp do
 							flips: [\top]
 							allowedFlips: [\bottom \top]
 						@popper.forceUpdate!
-						document.addEventListener \mousedown @onmousedownGlobal
+						document.body.addEventListener \mousedown @onmousedownGlobal
 						itemEl = @el.querySelector \.active
 						top = Math.round itemEl.offsetTop - @el.offsetHeight / 2 + itemEl.offsetHeight / 2
 						@el.scrollTop = top if top > 0
@@ -104,7 +104,7 @@ Select = os.comp do
 			m.mount @el
 			@el.remove!
 			@el = void
-			document.removeEventListener \mousedown @onmousedownGlobal
+			document.body.removeEventListener \mousedown @onmousedownGlobal
 
 	onremove: !->
 		@close!

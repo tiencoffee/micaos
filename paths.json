@@ -1,29 +1,34 @@
 {
 	"comp/both/*": [
-		"comp/both/Button.ls",
-		"comp/both/Checkbox.ls",
-		"comp/both/Icon.ls",
-		"comp/both/InputGroup.ls",
-		"comp/both/Menu.ls",
-		"comp/both/NumberInput.ls",
-		"comp/both/PasswordInput.ls",
-		"comp/both/Popover.ls",
-		"comp/both/Progress.ls",
-		"comp/both/Radio.ls",
-		"comp/both/Select.ls",
-		"comp/both/Slider.ls",
-		"comp/both/Spinner.ls",
-		"comp/both/Switch.ls",
-		"comp/both/Table.ls",
-		"comp/both/Tabs.ls",
-		"comp/both/TextInput.ls"
+		"/comp/both/Button.ls",
+		"/comp/both/Checkbox.ls",
+		"/comp/both/Icon.ls",
+		"/comp/both/InputGroup.ls",
+		"/comp/both/Menu.ls",
+		"/comp/both/NumberInput.ls",
+		"/comp/both/PasswordInput.ls",
+		"/comp/both/Popover.ls",
+		"/comp/both/Progress.ls",
+		"/comp/both/Radio.ls",
+		"/comp/both/Select.ls",
+		"/comp/both/Slider.ls",
+		"/comp/both/Spinner.ls",
+		"/comp/both/Switch.ls",
+		"/comp/both/Table.ls",
+		"/comp/both/Tabs.ls",
+		"/comp/both/TextInput.ls"
 	],
 	"comp/main/*": [
-		"comp/main/App.ls",
-		"comp/main/Task.ls"
+		"/comp/main/App.ls",
+		"/comp/main/Task.ls"
 	],
 	"comp/user/*": [],
 	"C/apps/*": [
-		"C/apps/FileManager"
+		"/C/apps/FileManager"
+	],
+	"C/imgs/**/*.*": [
+		"/C/imgs/bg/1.jpg",
+		"/C/imgs/bg/2.jpg",
+		"/C/imgs/bg/3.jpg"
 	]
 }

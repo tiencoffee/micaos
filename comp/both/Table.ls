@@ -5,10 +5,12 @@ Table = os.comp do
 				"Table--hasHeader": @attrs.header
 				"Table--bordered": @attrs.bordered
 				"Table--striped": @attrs.striped
+				"Table--fixed": @attrs.fixed
+				"Table--truncate": @attrs.truncate
 				"Table--interactive": @attrs.interactive
 				@attrs.class
 			style: os.style do
 				@attrs.style
 			m \.Table__table,
-				os.castFuncVal @attrs.header
-				os.castFuncVal @attrs.body
+				@attrs.header
+				@attrs.children

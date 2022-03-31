@@ -10,6 +10,20 @@ NumberInput = os.comp do
 	oninputInput: (event) !->
 		@attrs.oninput? event.target.value
 
+	oncontextmenuInput: (event) !->
+		@attrs.oncontextmenu? event
+		os.showContextMenu event,
+			* text: "Tăng lên"
+				icon: \plus
+				onclick: !~>
+					@spin 1
+			* text: "Giảm xuống"
+				icon: \minus
+				onclick: !~>
+					@spin -1
+			,,
+			\TextInput-all
+
 	onclickMinus: (event) !->
 		@spin -1
 
@@ -32,6 +46,7 @@ NumberInput = os.comp do
 					required: @attrs.required
 					value: @attrs.value
 					oninput: @oninputInput
+					oncontextmenu: @oncontextmenuInput
 			m Button,
 				icon: \plus
 				onclick: @onclickPlus

@@ -2,6 +2,7 @@ dayjs.locale \vi
 
 os =
 	uniqIdVal: 0
+	importPaths: {}
 
 	cssUnitless:
 		animationIterationCount: yes
@@ -58,7 +59,7 @@ os =
 					res.push k if val
 			else
 				res.push item
-		res * " "
+		res.join " "
 
 	style: (...items) ->
 		res = {}
@@ -74,9 +75,11 @@ os =
 		res
 
 	bind: (target) ->
-		for k, val of target
-			if typeof val is \function
-				target[k] = val.bind target
+		for k of target
+			unless target.__lookupGetter__ k
+				val = target[k]
+				if typeof val is \function
+					target[k] = val.bind target
 
 	comp: (props) ->
 		{oninit, oncreate, onbeforeupdate, onupdate, onremove} = props
@@ -109,16 +112,25 @@ os =
 				@onupdate$$? @old$$
 			onremove: !->
 				@onremove$$?!
-				@attrs = void
 				@dom = void
 				@old$$ = void
 
 	clamp: (num, min, max) ->
 		unless max?
 			[min, max] = [0, min]
-		if num < min => min
-		else if num > max => max
-		else num
+		if num < min => +min
+		else if num > max => +max
+		else +num
+
+	addStartStr: (str, strStart) ->
+		str += ""
+		if str.startsWith strStart => str
+		else strStart + str
+
+	addEndStr: (str, strEnd) ->
+		str += ""
+		if str.endsWith strEnd => str
+		else str + strEnd
 
 	castArr: (arr) ->
 		if Array.isArray arr => arr
@@ -138,13 +150,32 @@ os =
 	uniqId: ->
 		++@uniqIdVal
 
+	uniqArr: (arr) ->
+		[...new Set arr]
+
+	unionArr: (arr, arr2) ->
+		arr = new Set arr
+		for val in arr2
+			arr.add val
+		[...arr]
+
+	diffArr: (arr, arr2) ->
+		arr = new Set arr
+		for val in arr2
+			if arr.has val
+				arr.delete val
+		[...arr]
+
+	xorArr: (arr, arr2) ->
+		arr = new Set arr
+		new Set arr2 .forEach (val) !~>
+			arr[arr.has val and \delete or \add] val
+		[...arr]
+
 	rand: (min = 0, max = 1) ->
 		if min > max
 			[min, max] = [max, min]
 		Math.floor min + Math.random! * (max - min + 1)
-
-	uuid: ->
-		"_#{@uniqId!toString 36}#{Date.now!toString 36}#{@rand 9e15 .toString 36}"
 
 	indent: (text, lv) ->
 		text.replace /^(?=.)/gm "\t"repeat lv
@@ -166,10 +197,50 @@ os =
 						fallbackPlacements: opts.flips
 						allowedAutoPlacements: opts.allowedFlips
 
+	createUndoable: (items, isInput, duplicate, maxLength) ->
+		items = @castArr items
+		items.push "" if isInput
+		items: items
+		index: items.length - 1
+		isInput: isInput
+		duplicate: duplicate
+		maxLength: maxLength or Infinity
+		add: (item) !->
+			if @canRedo and not isInput
+				@items.splice @index + 1
+			lastItem = @items[* - (isInput and 2 or 1)]
+			if @duplicate or (isInput and item isnt @items[* - 2]) or (not isInput and item isnt @items[* - 1])
+				if isInput
+					@items[* - 1] = item
+					@items.push ""
+				else
+					@items.push item
+			@index = @items.length - 1
+		undo: ->
+			if @canUndo
+				@items[--@index]
+		redo: ->
+			if @canRedo
+				@items[++@index]
+		canUndo:~ ->
+			@index > 0
+		canRedo:~ ->
+			@index < @items.length - 1
+		item:~ ->
+			@items[@index]
+		prev:~ ->
+			@items[@index - 1]
+		next:~ ->
+			@items[@index + 1]
+
 	fetch: (url, opts, type = \text) ->
 		if typeof opts is \string
 			[opts, type] = [, opts]
-		fetch url, opts .then (.[type]!)
+		res = await fetch url, opts
+		if res.ok
+			res[type]!
+		else
+			throw Error "#{res.statusText} '#{res.url}'"
 
 	splitPath: (path) ->
 		path .= trim!
@@ -224,7 +295,87 @@ os =
 			ext .= replace \. ""
 		ext
 
+	import: (...paths) !->
+		code = ""
+		styl = ""
+		for path in paths
+			unless @importPaths[path]
+				if /^(?:(\w+):)?(.+?)(?:#(\w+))?$/exec path
+					[, cdn, name, type] = that
+					@importPaths[path] = yes
+					if not cdn and name.0 not in [\. \/]
+						cdn = \npm
+					unless type
+						if /(?<=\.)[a-zA-Z\d\-]+(?=$|\?)/exec name
+							type = that.0
+					type = (type or \js)toLowerCase!
+					text = switch cdn
+						| \npm \gh
+							await @fetch "https://cdn.jsdelivr.net/#cdn/#name"
+						| \https \http
+							await @fetch cdn + name
+						else
+							await @readFile name
+					text += \\n
+					switch type
+					| \js
+						code += text
+					| \css
+						styl += text
+				else
+					throw Error "Định dạng import không đúng: '#path'"
+		if code
+			await window.eval code
+		else if styl
+			el = document.createElement \style
+			el.textContent = styl
+			document.head.appendChild el
+
+	createContextMenuItems: (list = [], isExtractOnclick) ->
+		newItems = []
+		tags = {}
+		onclicks = []
+		callTags = (items) !~>
+			items = @castArr items
+			for item in items
+				if item
+					if item.tags
+						for tag in item.tags
+							tags[tag] ?= []
+							tags[tag]push item
+					else if item.submenu
+						callTags item.submenu
+		callItems = (items) ~>
+			items = @castArr items
+			newItems = []
+			for item in items
+				if typeof item is \string
+					items2 = tags[item]
+				else
+					items2 = [item]
+				if items2
+					for item in items2
+						if item
+							unless item.hidden or \shown of item and not item.shown
+								item = {...item}
+								if item.submenu
+									item.submenu = callItems item.submenu
+								else
+									if isExtractOnclick
+										if onclick = item.onclick
+											item.onclick = onclicks.length
+											onclicks.push onclick
+								newItems.push item
+						else
+							item = divider: yes
+							newItems.push item
+			newItems
+		for items, i in list by -1
+			if i
+				callTags items
+			else
+				newItems = callItems items
+		[newItems, onclicks]
+
 /* comp */
 /* code */
-
-m.mount appEl, App

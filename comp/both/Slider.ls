@@ -50,9 +50,10 @@ Slider = os.comp do
 			@moving = yes
 			m.redraw!
 		if @moving
-			x = event[@attrs.vertical and \pageY or \pageX]
-			offsetLeft = event.currentTarget[@attrs.vertical and \offsetTop or \offsetLeft]
-			offsetWidth = event.currentTarget[@attrs.vertical and \offsetHeight or \offsetWidth]
+			x = event[@attrs.vertical and \clientY or \clientX]
+			rect = event.currentTarget.getBoundingClientRect!
+			offsetLeft = rect[@attrs.vertical and \y or \x]
+			offsetWidth = rect[@attrs.vertical and \height or \width]
 			perc = (x - offsetLeft - 10) / (offsetWidth - 20) * 100
 			if @attrs.vertical
 				perc = 100 - perc

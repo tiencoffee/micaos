@@ -1,10 +1,32 @@
+#contextMenuEl
+	border-radius 6px
+	background #fff
+	z-index 90
+
 .App__content
 	height 100%
 	display flex
 	flex-direction column
+.App__bg
+	position absolute
+	width 100%
+	height 100%
 .App__tasks
 	position relative
 	flex 1
+.App__taskbar
+	padding 4px
+	border-top solid 1px light5
+	display flex
+	align-items center
+	background #fff
+	z-index 70
+.App__taskbarTasks
+	display flex
+	align-items center
+	gap 4px
+.App__contextMenu
+	box-shadow 0 4px 6px -1px #0002,0 2px 4px -2px #0002
 .App__loader
 	height 100%
 	display flex
@@ -17,63 +39,139 @@
 
 .Task
 	position absolute
-	border solid 1px light5
 	border-radius 8px
 	background #fff
-	box-shadow 0 4px 6px -1px #0002,0 2px 4px -2px #0002
+	box-shadow 0 10px 15px -3px #0002,0 4px 6px -4px #0002,0 0 0 1px light5
 	animation Task--open .4s $easeOut
-.Task--didMaximize
-	animation Task--restored .4s $easeOut forwards
+	z-index 0
+	&.Task--didMaximize
+		animation Task--restore .4s $easeOut forwards
+		.Task__iframe
+			animation Task__iframe--restore .4s $easeOut forwards
+.Task--firstMinimize
+	visibility hidden
 .Task--maximized
-	animation Task--maximized .4s $easeOut forwards
+	&.Task--didMaximize
+		animation Task--maximize .4s $easeOut forwards
+		.Task__iframe
+			animation Task__iframe--maximize .4s $easeOut forwards
+	&:not(.Task--didMaximize)
+		animation Task--openMaximize .4s $easeOut forwards
+		.Task__iframe
+			left 0
+			top 0
+			width 100%
+			height 100%
+			border-radius 0
+.Task--transparent
+	background #0000
+	box-shadow none
+	.Task__content
+	.Task__iframe
+		background #0000
 .Task__content
 	position relative
 	height 100%
-	border-radius 8px
+	border-radius 10px
 	display flex
 	flex-direction column
+	background #fff
 .Task__header
-	padding 4px
-	border-radius 8px 8px 0 0
+	height 28px
+	margin 4px 4px 0
+	padding-bottom 4px
+	border-radius 6px 6px 0 0
 	display flex
 	column-gap 8px
+	z-index 1
 .Task__title
 	flex 1
 	text-truncate ellipsis
 .Task__body
-	padding 0 4px 4px
-	border-radius 0 0 8px 8px
+	position relative
 	flex 1
+	z-index 1
 .Task__iframe
-	width 100%
-	height 100%
+	position absolute
+	left 4px
+	top 4px
+	width calc(100%- 8px)
+	height calc(100%- 8px)
 	border 0
 	border-radius 6px
-	background coral
-.App__taskbar
-	padding 4px
-	display flex
-	align-items center
 	background #fff
-	box-shadow 0 -1px light5
-	z-index 70
+.Task__resizer
+	position absolute
+	width 16px
+	height 16px
+	cursor nwse-resize
+	&[data-x="-1"]
+		left -4px
+	&[data-x="0"]
+		width calc(100% - 8px)
+		cursor ns-resize
+	&[data-x="1"]
+		right -4px
+	&[data-y="-1"]
+		top -4px
+	&[data-y="0"]
+		height calc(100% - 8px)
+		cursor ew-resize
+	&[data-y="1"]
+		bottom -4px
+	&[data-x="-1"][data-y="-1"]
+		border-top-left-radius 8px
+	&[data-x="1"][data-y="-1"]
+		border-top-right-radius 8px
+		cursor nesw-resize
+	&[data-x="1"][data-y="1"]
+		border-bottom-right-radius 8px
+	&[data-x="-1"][data-y="1"]
+		border-bottom-left-radius 8px
+		cursor nesw-resize
 @keyframes Task--open
 	from
 		transform scale(.9)
 		opacity 0
-@keyframes Task--maximized
-	to
-		left 0
-		top 0
-		width 100%
-		height calc(100% - 1px)
-		border-width 0
-		border-radius 0
-@keyframes Task--restored
+@keyframes Task--openMaximize
 	from
 		left 0
 		top 0
 		width 100%
-		height calc(100% - 1px)
-		border-width 0
+		height 100%
+		transform scale(.9)
+		opacity 0
+	to
+		left 0
+		top 0
+		width 100%
+		height 100%
+		border-radius 0
+@keyframes Task--maximize
+	to
+		left 0
+		top 0
+		width 100%
+		height 100%
+		border-radius 0
+@keyframes Task--restore
+	from
+		left 0
+		top 0
+		width 100%
+		height 100%
+		border-radius 0
+@keyframes Task__iframe--maximize
+	to
+		left 0
+		top 0
+		width 100%
+		height 100%
+		border-radius 0
+@keyframes Task__iframe--restore
+	from
+		left 0
+		top 0
+		width 100%
+		height 100%
 		border-radius 0

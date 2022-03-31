@@ -1,5 +1,5 @@
 class Task
-	(app, env, resolve, code, styl) ->
+	(app, env, cid, parent, resolve, code, styl) ->
 		for k, val of staticMethods
 			@[k] = val
 		for k, val of getPublicMethods yes
@@ -8,33 +8,97 @@ class Task
 			@[k] = val
 		@bind @
 		@app = app
-		@pid = @uniqId!
-		@tid = @uuid!
-		@name = app.name
-		@icon = app.icon
-		@title = env.title ? app.title
-		@width = env.width or app.width
-		@height = env.height or app.height
-		@x = env.x ? app.x ? Math.floor os.desktopWidth / 2 - @width / 2
-		@y = env.y ? app.y ? Math.floor os.desktopHeight / 2 - @height / 2
-		@minimizable = env.minimizable ? app.minimizable
-		@maximizable = env.maximizable ? app.maximizable
-		@minimized = env.minimized ? app.minimized
-		@maximized = env.maximized ? app.maximized
-		@admin = env.admin ? app.admin
+		@env = {} <<< env
+		@args = {} <<< env.args
+		@evts = Array.from env.evts || []
 		@resolve = resolve
+		@cid = cid ? crypto.randomUUID!
+		@parent = parent
+		@pid = os.uniqId!
+		@tid = crypto.randomUUID!
+		@title = env.title ? app.title ? app.name
+		@width = @clamp env.width || app.width || 800 @minWidth, @maxWidth
+		@height = @clamp env.height || app.height || 600 @minHeight, @maxHeight
+		x = env.x ? app.x
+		@x =
+			if isFinite x => @clamp x, os.desktopWidth - @width
+			else Math.floor (os.desktopWidth - @width) / 2
+		y = env.y ? app.y
+		@y =
+			if isFinite y => @clamp y, os.desktopHeight - @height
+			else Math.floor (os.desktopHeight - @height) / 2
+		@minimizable = env.minimizable ? app.minimizable ? yes
+		@maximizable = env.maximizable ? app.maximizable ? yes
+		@resizable = env.resizable ? app.resizable ? yes
+		@movable = env.movable ? app.movable ? yes
+		@focusable = env.focusable ? app.focusable ? yes
+		@header = env.header ? app.header ? yes
+		@skipTaskbar = env.skipTaskbar ? app.skipTaskbar ? no
+		@acceptFirstMouse = env.acceptFirstMouse ? app.acceptFirstMouse ? yes
+		@transparent = env.transparent ? app.transparent ? no
+		@minimized = env.minimized ? app.minimized ? no
+		@maximized = env.maximized ? app.maximized ? no
+		@admin = env.admin ? app.admin ? no
 		@moving = no
+		@resizing = void
+		@firstMinimize = @minimized
 		@didMaximize = no
+		@minimizeAnim = void
+		@postMessage = void
+		code = userCode.replace /(^\t+)?\/\* (.+?) \*\//gm (, tab, name) ~>
+			val = switch name
+				| \code => code
+				| \tid => @tid
+			val = @indent val, tab.length if tab
+			val
+		styl = userStyl.replace /(^\t+)?\/\* (.+?) \*\//gm (, tab, name) ~>
+			val = switch name
+				| \styl => styl
+			val = @indent val, tab.length if tab
+			val
+		code = livescript.compile code
+		styl = stylus.render styl, compress: yes
+		@html = userHtml.replace /\/\* (.+?) \*\//gm (, name) ~>
+			switch name
+				| \styl => styl
+				| \code => code
+
+	minWidth:~ ->
+		@clamp (@env.minWidth or @app.minWidth or 200), 200 os.desktopWidth
+
+	maxWidth:~ ->
+		@clamp (@env.maxWidth or @app.maxWidth or os.desktopWidth), @minWidth, os.desktopWidth
+
+	minHeight:~ ->
+		@clamp (@env.minHeight or @app.minHeight or 80), 80 os.desktopHeight
+
+	maxHeight:~ ->
+		@clamp (@env.maxHeight or @app.maxHeight or os.desktopHeight), @minHeight, os.desktopHeight
 
 	oncreate: (vnode) !->
 		@dom = vnode.dom
+		@iframe = @dom.querySelector \iframe
+		@iframe.sandbox = """
+			allow-downloads
+			allow-forms
+			allow-pointer-lock
+			allow-popups
+			allow-presentation
+			allow-scripts
+		"""
+		@iframe.srcdoc = @html
+		delete @html
 		@updateRectDom!
+		if @minimized
+			@updateMinimizeDom!
 
 	minimize: (val) ->
 		val ?= not @minimized
 		if @minimizable
 			if val isnt @minimized
 				@minimized = val
+				@firstMinimize = no
+				@updateMinimizeDom!
 				m.redraw!
 				return yes
 		no
@@ -56,6 +120,38 @@ class Task
 			@resolve val
 			m.redraw!
 
+	updateMinimizeDom: !->
+		if @minimized
+			if el = document.querySelector ".App__taskbarTask--#@pid"
+				rect = el.getBoundingClientRect!
+				keyframes = @style do
+					left: rect.x
+					top: rect.y
+					width: rect.width
+					height: rect.height
+				@minimizeAnim = @dom.animate keyframes,
+					duration: 400
+					easing: "cubic-bezier(.22,1,.36,1)"
+					fill: \forwards
+		else
+			if @minimizeAnim
+				@minimizeAnim.reverse!
+				@minimizeAnim = void
+			keyframes = @style do
+				if @maximized
+					left: 0
+					top: 0
+					width: \100%
+					height: \100%
+				else
+					left: @x
+					top: @y
+					width: @width
+					height: @height
+			@dom.animate keyframes,
+				duration: 400
+				easing: "cubic-bezier(.22,1,.36,1)"
+
 	updateXYDom: !->
 		@dom.style.left = @x + \px
 		@dom.style.top = @y + \px
@@ -69,15 +165,16 @@ class Task
 		@updateSizeDom!
 
 	onpointerdownTitle: (event) !->
-		event.target.setPointerCapture event.pointerId
-		@moving = yes
+		if event.button is 0
+			event.target.setPointerCapture event.pointerId
+			@moving = yes
 
 	onpointermoveTitle: (event) !->
 		event.redraw = no
 		if @moving
 			if @maximized
-				@x = (Math.floor @clamp event.x - @width / 2 os.desktopWidth - @width) - 1
-				@y = -1
+				@x = Math.floor @clamp event.x - @width / 2 os.desktopWidth - @width
+				@y = 0
 				@maximize no
 			@x += event.movementX
 			@y += event.movementY
@@ -86,206 +183,162 @@ class Task
 	onlostpointercaptureTitle: (event) !->
 		if @moving
 			@moving = no
+			{x, y} = event
+			if x <= 0 or x >= os.desktopWidth - 1
+				@y = 0
+				@width = Math.floor os.desktopWidth / 2
+				@height = os.desktopHeight
+				if x <= 0
+					@x = 0
+				else
+					@x = os.desktopWidth - @width
+			else if y <= 0
+				@maximize yes
 			@x = @clamp @x, os.desktopWidth - @width
 			@y = @clamp @y, os.desktopHeight - @height
-			@updateXYDom!
+			@updateRectDom!
+
+	onclickTitle: (event) !->
+		unless event.detail % 2
+			@maximize!
+
+	onpointerdownResizer: (event) !->
+		if event.button is 0
+			event.target.setPointerCapture event.pointerId
+			dx = +event.target.dataset.x
+			dy = +event.target.dataset.y
+			@resizing =
+				dx: dx
+				dy: dy
+				mx: 0
+				my: 0
+				old:
+					x: @x
+					y: @y
+					width: @width
+					height: @height
+				bound:
+					x2: if dx < 0 => @x + @width - @minWidth
+					x1: if dx < 0 => Math.max 0 @x + @width - @maxWidth
+					maxWidth: Math.min @maxWidth,
+						if dx < 0 => @x + @width
+						else if dx > 0 => os.desktopWidth - @x
+					y2: if dy < 0 => @y + @height - @minHeight
+					y1: if dy < 0 => Math.max 0 @y + @height - @maxHeight
+					maxHeight: Math.min @maxHeight,
+						if dy < 0 => @y + @height
+						else if dy > 0 => os.desktopHeight - @y
+
+	onpointermoveResizer: (event) !->
+		event.redraw = no
+		if @resizing
+			{dx, dy, mx, my, old, bound} = @resizing
+			if dx
+				mx += event.movementX
+				if dx < 0
+					@x = @clamp old.x + mx, bound.x1, bound.x2
+				@width = @clamp old.width + mx * dx, @minWidth, bound.maxWidth
+				@resizing.mx = mx
+			if dy
+				my += event.movementY
+				if dy < 0
+					@y = @clamp old.y + my, bound.y1, bound.y2
+				@height = @clamp old.height + my * dy, @minHeight, bound.maxHeight
+				@resizing.my = my
+			@updateRectDom!
+
+	onlostpointercaptureResizer: (event) !->
+		if @resizing
+			@resizing = void
 
 	onbeforeremove: (vnode) ->
-		anim = @dom.animate do
+		@dom.animate do
 			* transform: "scale(.9)"
 				opacity: 0
 			* duration: 400
 				easing: "cubic-bezier(.22,1,.36,1)"
 		.finished
 
-	onremove: !->
-		@dom = void
-
 	view: ->
 		m \.Task,
 			class: @class do
 				"Task--moving": @moving
+				"Task--firstMinimize": @firstMinimize
 				"Task--didMaximize": @didMaximize
 				"Task--minimized": @minimized
 				"Task--maximized": @maximized
+				"Task--transparent": @transparent
 			m \.Task__content,
-				m \.Task__header,
-					m Button,
-						class: "Task__icon"
-						basic: yes
-						small: yes
-						icon: @icon
-					m \.Task__title,
-						onpointerdown: @onpointerdownTitle
-						onpointermove: @onpointermoveTitle
-						onlostpointercapture: @onlostpointercaptureTitle
-						@title
-					m \.Task__buttons,
-						m Button,
-							class: "Task__button"
-							basic: yes
-							small: yes
-							icon: \minus
-							onclick: !~>
-								@minimize!
-						m Button,
-							class: "Task__button"
-							basic: yes
-							small: yes
-							icon: \plus
-							onclick: !~>
-								@maximize!
-						m Button,
-							class: "Task__button"
-							basic: yes
-							small: yes
-							color: \red
-							icon: \times
-							onclick: !~>
-								@close!
+				if @header
+					m \.Task__header,
+						m Popover,
+							placement: \bottom-start
+							content: (close) ~>
+								m Menu,
+									basic: yes
+									items:
+										* text: "Thu nhỏ"
+											icon: \minus
+											shown: @minimizable
+											onclick: !~>
+												close!
+												@minimize!
+										* text: "Phóng to"
+											icon: \plus
+											shown: @maximizable
+											onclick: !~>
+												close!
+												@maximize!
+										* text: "Đóng"
+											icon: \close
+											color: \red
+											onclick: !~>
+												close!
+												m.redraw.sync!
+												@close!
+							m Button,
+								class: "Task__icon"
+								basic: yes
+								small: yes
+								icon: @app.icon
+						m \.Task__title,
+							onpointerdown: @onpointerdownTitle
+							onpointermove: @onpointermoveTitle
+							onlostpointercapture: @onlostpointercaptureTitle
+							onclick: @onclickTitle
+							@title
+						m \.Task__buttons,
+							m Button,
+								class: "Task__button"
+								basic: yes
+								small: yes
+								icon: \minus
+								onclick: !~>
+									@minimize!
+							m Button,
+								class: "Task__button"
+								basic: yes
+								small: yes
+								icon: \plus
+								onclick: !~>
+									@maximize!
+							m Button,
+								class: "Task__button"
+								basic: yes
+								small: yes
+								color: \red
+								icon: \close
+								onclick: !~>
+									@close!
 				m \.Task__body,
 					m \iframe.Task__iframe
+				if @resizable and not @maximized and not @minimized
+					@@resizers.map (resizer) ~>
+						m \.Task__resizer,
+							"data-x": resizer.0
+							"data-y": resizer.1
+							onpointerdown: @onpointerdownResizer
+							onpointermove: @onpointermoveResizer
+							onlostpointercapture: @onlostpointercaptureResizer
 
-staticMethods = os
-
-function getPublicMethods isTask
-	readFile: (path, type = \text) ->
-		type = type.charAt!toUpperCase! + type.substring 1
-		fs.readFile path, type: type
-
-	writeFile: (path, data) ->
-		file = await fs.writeFile path, data
-		@makeEntry file
-
-	appendFile: (path, data) ->
-		file = await fs.appendFile path, data
-		@makeEntry file
-
-	removeFile: (path) ->
-		res = await fs.unlink path
-		res isnt no
-
-	createDir: (path) ->
-		dir = await fs.mkdir path
-		@makeEntry dir
-
-	readDir: (path, isDeep) ->
-		fs.readdir path, deep: isDeep
-
-	removeDir: (path) ->
-		res = await fs.rmdir path
-		res isnt no
-
-	getEntry: (path) ->
-		entry = await fs.getEntry path
-		@makeEntry entry
-
-	existsEntry: (path) ->
-		fs.exists path
-
-	copyEntry: (path, newPath, isCreate) ->
-		entry = await fs.copy path, newPath, create: isCreate
-		@makeEntry entry
-
-	moveEntry: (path, newPath, isCreate) ->
-		entry = await fs.rename path, newPath, create: isCreate
-		@makeEntry entry
-
-	installApp: (url, path, source) !->
-		path = @normPath path
-		switch source
-		| \local
-			results = await Promise.allSettled [
-				@fetch "#path/app.yml"
-				@fetch "#path/app.ls"
-				@fetch "#path/app.styl"
-			]
-			[pkg, code, styl] = results.map (.value)
-			if pkg
-				pkg = jsyaml.safeLoad pkg
-				app =
-					name: pkg.name
-					title: pkg.title ? pkg.name
-					icon: pkg.icon ? \window
-					path: path
-					x: pkg.x
-					y: pkg.y
-					width: pkg.width or 800
-					height: pkg.height or 600
-					minimizable: pkg.minimizable ? yes
-					maximizable: pkg.maximizable ? yes
-					minimized: pkg.minimized ? no
-					maximized: pkg.maximized ? no
-					type: pkg.type or \user
-					admin: admin ? no
-				await @writeFile "#path/app.yml" pkg
-				if code
-					await @writeFile "#path/app.ls" code
-				if styl
-					await @writeFile "#path/app.styl" styl
-				os.apps.push app
-				m.redraw!
-
-	runTask: (path, env = {}) ->
-		path = @dirPath path
-		if app = os.apps.find (.path is path)
-			new Promise (resolve) !~>
-				code = await @readFile "#path/app.ls"
-				try
-					styl = await @readFile "#path/app.styl"
-				catch
-					styl = ""
-				task = new Task app, env, resolve, code, styl
-				os.tasks.push task
-				m.redraw!
-		else
-			throw Error "Không tìm thấy ứng dụng"
-
-	closeTask: (pid) ->
-		if task = os.tasks.find (.pid is pid)
-			task.close!
-		else
-			throw Error "Không tìm thấy task"
-
-function getPrivateMethods isTask
-	entryToPath: (entry) ->
-		if typeof entry is \string => entry
-		else entry.path
-
-	makeEntry: (entry) ->
-		stat = await fs.stat entry
-		entry =
-			name: stat.name
-			path: stat.fullPath
-			mtime: stat.modificationTime
-			size: stat.size
-			isDir: stat.isDir
-			isFile: stat.isFile
-			ext: @extPath stat.name
-		entry.icon = await @getEntryIcon entry
-		entry
-
-	getEntryIcon: (entry) ->
-		if entry.isDir
-			\folder-blank
-		else
-			switch entry.ext
-			| <[ls styl stylus pug html htm css js json lson yml yaml xml]>
-				\file-code
-			| <[txt]>
-				\file-lines
-			| <[png jpg jpeg gif webp]>
-				\file-image
-			| <[mp3 aac wav]>
-				\file-music
-			| <[mp4 webm]>
-				\file-video
-			| <[zip rar]>
-				\file-zipper
-			| <[csv]>
-				\file-csv
-			| <[pdf]>
-				\file-pdf
-			| <[doc]>
-				\file-word
-			else \file
+	@resizers = [[0 -1] [1 0] [0 1] [-1 0] [-1 -1] [1 -1] [1 1] [-1 1]]

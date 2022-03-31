@@ -52,14 +52,14 @@ $colors2 = {
 $spaces = {
 	"0": 0
 	"1": 1px
-	"2": 4px
-	"3": 8px
-	"4": 12px
-	"5": 16px
-	"6": 20px
-	"7": 24px
-	"8": 28px
-	"9": 32px
+	"2": 2px
+	"3": 4px
+	"4": 8px
+	"5": 12px
+	"6": 16px
+	"7": 20px
+	"8": 24px
+	"9": 28px
 }
 
 $easeIn = cubic-bezier(.64,0,.78,0)
@@ -67,7 +67,7 @@ $easeOut = cubic-bezier(.22,1,.36,1)
 $easeInOut = cubic-bezier(.83,0,.17,1)
 
 $sans = unquote("'Verdana',sans-serif")
-$mono = unquote("'Cousine',monospace")
+$mono = unquote("'PragmataPro Mono',monospace")
 
 @import "https://fonts.googleapis.com/css?family=Cousine:,i,b,bi"
 
@@ -107,11 +107,13 @@ user-modify(arguments)
 	width 16px
 	height 16px
 ::-webkit-scrollbar-thumb
-	border solid 3px #fff
+	border solid 3px #0000
 	border-radius 7px
-	background light5
+	background light5 content-box
 	&:hover
-		background dark1
+		background-color dark1
+::-webkit-scrollbar-corner
+	background #0000
 .scrollbar-inset
 	&::-webkit-scrollbar
 		width 12px
@@ -123,12 +125,14 @@ user-modify(arguments)
 html
 	height 100%
 	overflow hidden
+	background #fff
 body
 	height 100%
 	margin 0
 	font-family $sans
 	font-size 14px
 	line-height 1.5
+	overflow hidden
 	tab-size 2
 	word-break break-word
 	user-select none
@@ -186,19 +190,19 @@ ul
 	&:after
 		vertical-align baseline
 
+.Icon
+	width unquote("max(24px,1em)")
+	height unquote("max(24px,1em)")
+	font-size 16px
+	pointer-events none
 .Icon__fa
 	display inline-flex
 	justify-content center
 	align-items center
-	font-size 1.1428571em
 .Icon__img
-	width 1.4285714em
-	height 1.4285714em
 	object-fit contain
 	image-rendering -webkit-optimize-contrast
 .Icon__blank
-	width 1.14286em
-	height 1.14286em
 	display inline-block
 
 colors = {
@@ -261,6 +265,9 @@ for align in left right
 	justify-content center
 	align-items center
 	background #fff
+	transition-property border-color,border-radius,box-shadow
+	transition-duration .15s
+	transition-timing-function $easeOut
 	&:focus-within
 		position relative
 		border-color #0000
@@ -347,7 +354,7 @@ for align in left right
 	position relative
 	width 36px
 	height 20px
-	border-radius 20px
+	border-radius 28px
 	background light3
 	transition background .15s $easeOut
 .Switch__thumb
@@ -357,7 +364,7 @@ for align in left right
 	width 18px
 	height 18px
 	border solid 1px light5
-	border-radius 18px
+	border-radius 28px
 	background #fff
 	transition left .15s $easeOut
 .Switch__input
@@ -432,11 +439,10 @@ for align in left right
 	width 200px
 	> .Button__leftIcon
 		width 20px
-		justify-content flex-start
 .Select__popper
-	width calc(100% + 12px)
+	width calc(100% + 2px)
 	border solid 1px light5
-	border-radius 8px
+	border-radius 6px
 	text-align left
 	white-space normal
 	overflow-x hidden
@@ -448,7 +454,7 @@ for align in left right
 	padding 4px
 .Select__item
 	min-height 28px
-	padding 0 8px
+	padding-right 8px
 	border-radius 4px
 	display flex
 	align-items center
@@ -456,9 +462,10 @@ for align in left right
 	&.active
 		background light4
 .Select__itemIcon
-	width 28px
-	min-width 28px
+	width 36px
+	min-width 36px
 	display flex
+	justify-content center
 	align-items center
 .Select__header
 	min-height 28px
@@ -531,13 +538,17 @@ for c, color in colors
 	max-width 500px
 	padding 4px
 	border solid 1px light5
-	border-radius 8px
+	border-radius 6px
 	display inline-block
 	white-space nowrap
 	background #fff
+.Menu--basic
+	border 0
+.Menu--fill
+	max-width inset
+	display block
 .Menu__item
 	min-height 28px
-	padding 0 12px
 	border-radius 4px
 	display flex
 	align-items center
@@ -558,15 +569,16 @@ for c, color in colors
 			.Menu__itemLabel
 				color color[3]
 .Menu__itemIcon
-	width 28px
-	min-width 28px
+	width 36px
+	min-width 36px
 	display flex
+	justify-content center
 	align-items center
 .Menu__itemText
+	padding-right 32px
 	flex 1
 	text-truncate ellipsis
 .Menu__itemLabel
-	margin-left 24px
 	display flex
 	align-items center
 	font-size 12px
@@ -590,7 +602,7 @@ for c, color in colors
 	border-top solid 1px light5
 	pointer-events none
 .Menu__submenu
-	border-radius 8px
+	border-radius 6px
 	box-shadow 0 4px 6px -1px #0002,0 2px 4px -2px #0002
 	z-index 81
 
@@ -614,11 +626,22 @@ for c, color in colors
 	> .InputGroup
 	> .TextInput
 	> .NumberInput
+	> .PasswordInput
 	> .Select
+		width auto
 		flex 1
 	> .Button--hasColor
 		position relative
 		z-index 1
+	> .InputGroup
+		> *
+			border-radius 0
+		&:first-child > :first-child
+			border-top-left-radius 4px
+			border-bottom-left-radius 4px
+		&:last-child > :last-child
+			border-top-right-radius 4px
+			border-bottom-right-radius 4px
 
 .Table
 	border-radius 4px
@@ -633,6 +656,8 @@ for c, color in colors
 	tr:first-child
 		position sticky
 		top 0
+		font-size 12px
+		font-weight bold
 		background #fff
 		> th
 			border-bottom solid 1px light5
@@ -647,6 +672,14 @@ for c, color in colors
 	td, th
 		&:not(:first-child)
 			border-left solid 1px light5
+.Table--fixed
+	.Table__table
+		table-layout fixed
+.Table--truncate
+	.Table__table
+		table-layout fixed
+	td, th
+		text-truncate ellipsis
 .Table--interactive
 	&:not(.Table--hasHeader) tr:hover
 	&:not(.Table--hasHeader) tr.active
@@ -660,7 +693,7 @@ for c, color in colors
 		&.Table--hasHeader tr:not(:first-child).active
 			background light4
 .Table__table
-	min-width 100%
+	width 100%
 	display table
 
 .Tabs
@@ -706,17 +739,18 @@ for c, color in colors
 .Tabs__panel
 	position relative
 
+.Popover__popper
+	border-radius 6px
+	z-index 80
 .Popover
+	position relative
 	width max-content
 	max-width calc(100vw - 16px)
 	max-height calc(100vh - 16px)
 	border solid 1px light5
-	border-radius 8px
+	border-radius 6px
 	background #fff
 	box-shadow 0 4px 6px -1px #0002,0 2px 4px -2px #0002
-	z-index 80
-.Popover__content
-	position relative
 
 #m
 	.full
@@ -872,25 +906,21 @@ for c, color in colors
 	.col
 		flex 1
 	.col-0
-		flex initial
+		flex-basis fit-content
 	for i in 1..12
 		.col-{i}
 			width round(i / 12 * 100%,6)
 
-	for i in 1..12
-		.columns-{i}
-			grid-template-columns repeat(i,minmax(0,1fr))
 	for i in 1..6
 		.rows-{i}
 			grid-template-rows repeat(i,minmax(0,1fr))
+	for i in 1..12
+		.columns-{i}
+			grid-template-columns repeat(i,minmax(0,1fr))
 	.flow-row
 		grid-auto-flow row
 	.flow-column
 		grid-auto-flow column
-	.auto-columns-fr
-		grid-auto-columns minmax(0,1fr)
-	.auto-rows-fr
-		grid-auto-rows minmax(0,1fr)
 
 	.start, .column.top
 		justify-content flex-start
@@ -998,13 +1028,24 @@ for c, color in colors
 	for val in auto cover contain
 		.bg-{val}
 			background-size val
+	opas = {"25": 44, "50": 88, "75": cc}
 	for c, color in $colors
 		for tone, i in color
 			.bg-{c}-{i + 1}
+			.bg-hover-{c}-{i + 1}:not(.active):hover
 				background-color tone
+			for o, opa in opas
+				.bg-{c}-{i + 1}-{o}
+				.bg-hover-{c}-{i + 1}-{o}:not(.active):hover
+					background-color s("%s%s",tone,opa)
 	for c, color in $colors2
 		.bg-{c}
+		.bg-hover-{c}:not(.active):hover
 			background-color color
+		for o, opa in opas
+			.bg-{c}-{o}
+			.bg-hover-{c}-{o}:not(.active):hover
+				background-color s("%s%s",color,opa)
 
 	for c, color in $colors
 		for tone, i in color
